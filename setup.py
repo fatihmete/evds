@@ -5,10 +5,10 @@ with open("README.md", "r", encoding="utf8") as fh:
 
 setuptools.setup(
     name="evds",
-    version="0.0.2",
+    version="0.1.0",
     author="Fatih Mete",
     author_email="fatihmete@live.com",
-    description="EVDS python wrapepr",
+    description="EVDS python wrapper",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/fatihmete/evds",

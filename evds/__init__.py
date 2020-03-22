@@ -10,17 +10,24 @@ class evdsAPI:
     evds = evdsAPI('EVDS_API_KEY')
     evds.get_data(['TP.DK.USD.A.YTL','TP.DK.EUR.A.YTL'], startdate="01-01-2019", enddate="01-01-2020")
     """
-    def __init__(self, key, lang = "TR", DEBUG=False):
+    def __init__(self, key, lang = "TR", DEBUG=False, proxies = "", httpsVerify = True):
         self.key = key
         self.DEBUG = DEBUG
+        self.proxies = proxies
+        self.httspVerify = httpsVerify
+        self.session = requests.Session()
+        if self.proxies != "":
+            self.session.proxies = self.proxies
+            self.session.verify = self.httspVerify
         
         if lang in ["TR","ENG"]:
             self.lang = lang
         else:
             self.lang = "TR"
 
-        #All categories in EVDS not accesible via API. So we use only available categories.
-        self.available_categories = [13, 18, 21,  1,  4, 15, 22,  6,  2, 19,  0, 12, 14, 26, 20,  3, 25, 23,  5, 28]
+        #All categories in EVDS not accesible via API. So we use only available categories. This issue fixed by update.
+        #self.available_categories = [13, 18, 21,  1,  4, 15, 22,  6,  2, 19,  0, 12, 14, 26, 20,  3, 25, 23,  5, 28]
+
         self.main_categories = self.__get_main_categories()
 
     def __get_main_categories(self, raw=False):
@@ -32,7 +39,8 @@ class evdsAPI:
         try:
             self.main_categories_raw = json.loads(main_categories)
             main_categories_df = pd.DataFrame(self.main_categories_raw, dtype="int")[["CATEGORY_ID","TOPIC_TITLE_" + self.lang]]
-            return main_categories_df[main_categories_df.CATEGORY_ID.isin(self.available_categories)]
+            # return main_categories_df[main_categories_df.CATEGORY_ID.isin(self.available_categories)] Fixed
+            return main_categories_df
         except:
             return print("Main categories couldn't load. Please check your API Key.")
 
@@ -84,7 +92,7 @@ class evdsAPI:
                                 "SERIE_NAME" + ("_ENG" if self.lang=="ENG" else ""),\
                                 "START_DATE"]]
         else:
-            return self.series
+            return self.series_df
         
     def get_data(self, series, startdate, enddate="", aggregation_types="", formulas="", frequency=""):
         """
@@ -167,7 +175,8 @@ class evdsAPI:
 
     def __make_request(self,url,params={}):
         params = self.__param_generator(params)
-        request = requests.get(url + params)
+        
+        request = self.session.get(url + params)
         print(request.url) if self.DEBUG==True else None
         if request.status_code==200:
 

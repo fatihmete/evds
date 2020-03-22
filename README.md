@@ -2,33 +2,19 @@
 
 [English](https://github.com/fatihmete/evds/blob/master/README_EN.md)
 
-EVDS paketi EVDS-API üzerinden Türkiye Cumhuriyet Merkez Bankası (TCMB) tarafından Elektronik Veri Dağıtım Sistemi (EVDS) aracılığıyla yayımlanan istatistiki verilere python aracılığıyla erişmenize imkan sağlar.
+EVDS paketi EVDS-API üzerinden Türkiye Cumhuriyet Merkez Bankası (TCMB) tarafından Elektronik Veri Dağıtım Sistemi (EVDS) aracılığıyla yayımlanan tüm istatistiki verilere python aracılığıyla erişmenize imkan sağlar.
 
-EVDS paketi ile aşağıda yer alan ana başlıklardaki tüm verilere erişebilirsiniz:
-- Piyasa Verileri
-- Kurlar
-- Faiz İstatistikleri
-- Para ve Banka İstatistikleri
-- Menkul Kıymet İstatistikleri
-- Finansal İstatistikler
-- TCMB Bilanço Verileri
-- Fiyat Endeksleri
-- Anketler
-- Ödemeler Dengesi Uluslararası Yatırım Pozisyonu
-- Dış Ticaret İstatistikleri
-- Kamu Maliyesi
-- Üretim
-- Ödeme Sistemleri Ve Emisyon
-- İstihdam
-- Dış Borçlar
-- Altın Verileri
-- Konut Ve İnşaat İstatistikleri
-- Turizm İstatistikleri
 ## Kurulum
 evds paketini pip paket yöneticisi aracılığıyla kurabilirsiniz:
 ```
 pip install evds --upgrade
 ```
+## Yenilikler
+0.1.0 sürümü ile birlikte aşağıdaki özellikler eklenmiştir:
+1. API üzerinden erişilemeyen serilere ilişkin EVDS'de yapılan güncellemeye paralel olarak tüm serilere erişim olanağı sağlanmıştır.
+2. Proxy desteği eklenmiştir. 
+3. Küçük hatalar giderildi
+
 ## Kullanım
 Örnek kullanım, 01-01-2019 - 01-01-2020 arası USD ve EUR alış kurlarına aşağıdaki şekilde erişilebilir.
 ```python
@@ -160,3 +146,9 @@ evds.get_series('bie_dbdborc')
 |TP.DB.B05|	2A1a:Merkezi Yönetim|	01-10-1989|
 
 `get_data()` fonksiyonu aracılığıyla SERIE_CODE'u kullanarak serilere ait verilere ulaşabilirsiniz.
+## Proxy Tanımlama
+Proxy adresinizi aşağıdaki gibi `proxies` parametresi ile tanımlayabilirsiniz. Ayrıca `httpsVerify` parametresi ile https kontrolünü devre dışı bırakabilirsiniz.
+```
+proxies = { "https" : "HTTPS_PROXY_URL"}
+evds = evdsAPI('EVDS_API_ANAHTARI', proxies=proxies, httpsVerify=False)
+```

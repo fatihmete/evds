@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf8") as fh:
 
 setuptools.setup(
     name="evds",
-    version="0.1.0",
+    version="0.1.1",
     author="Fatih Mete",
     author_email="fatihmete@live.com",
     description="EVDS python wrapper",

@@ -152,7 +152,7 @@ class evdsAPI:
             formula_param = "-".join([i for i in formulas])
         else:
             #User defined formula same for all series
-            formula_param = "-".join([formulas for i in range(series_count)])
+            formula_param = "-".join([str(formulas) for i in range(series_count)])
 
         data = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/',\
                            params = {
@@ -161,7 +161,7 @@ class evdsAPI:
                             'endDate' : enddate,
                             'type' : 'json',
                             'key' : self.key,
-                            'formula' : formula_param,
+                            'formulas' : formula_param,
                             'frequency' : str(frequency),
                             'aggregationTypes' : aggregation_type_param,
 

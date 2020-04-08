@@ -12,6 +12,7 @@ pip install evds --upgrade
 ## Yenilikler
 0.1.1 sürümü ile birlikte aşağıdaki özellikler eklenmiştir:
 1. formulas parametresindeki hata giderildi.
+
 0.1.0 sürümü ile birlikte aşağıdaki özellikler eklenmiştir:
 1. API üzerinden erişilemeyen serilere ilişkin EVDS'de yapılan güncellemeye paralel olarak tüm serilere erişim olanağı sağlanmıştır.
 2. Proxy desteği eklenmiştir. 

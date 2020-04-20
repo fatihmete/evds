@@ -44,7 +44,7 @@ To use the evds package, you must first get the API Key on the EVDS system. To g
 ![02](02.png)
 
 ## Proxies
-You can set proxies with `proxies` parameter as following. Also you can disable https verify with `httpsVerfiy` parameter.
+You can set proxies with `proxies` parameter as following. Also you can disable https verify with `httpsVerify` parameter.
 ```
 proxies = { "https" : "HTTPS_PROXY_URL"}
 evds = evdsAPI('EVDS_API_KEY', proxies=proxies, httpsVerify=False)

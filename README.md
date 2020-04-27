@@ -64,6 +64,7 @@ Kullanılabilecek yöntemler aşağıdaki gibidir:
 
 |Formül|Değer|
 |-------------|-|
+|Düzey (Öntanımlı)|0|
 |Yüzde Değişim|1|
 |Fark|2|
 |Yıllık Yüzde Değişim |3|

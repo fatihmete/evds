@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import json
+import warnings
 
 class evdsAPI:
     """
@@ -16,6 +17,7 @@ class evdsAPI:
         self.proxies = proxies
         self.httspVerify = httpsVerify
         self.session = requests.Session()
+        self.data = ""
         if self.proxies != "":
             self.session.proxies = self.proxies
             self.session.verify = self.httspVerify
@@ -24,27 +26,26 @@ class evdsAPI:
             self.lang = lang
         else:
             self.lang = "TR"
-
-        #All categories in EVDS not accesible via API. So we use only available categories. This issue fixed by update.
-        #self.available_categories = [13, 18, 21,  1,  4, 15, 22,  6,  2, 19,  0, 12, 14, 26, 20,  3, 25, 23,  5, 28]
+        # API returns this main categories but they are not available
+        self.not_available_categories = [17]
 
         self.main_categories = self.__get_main_categories()
-
-    def __get_main_categories(self, raw=False):
+        
+    def __get_main_categories(self):
         """
         Function returns main categories dataframe.
         """
         main_categories = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/categories/',\
                             params={'key' : self.key, 'type' : 'json'})
         try:
-            self.main_categories_raw = json.loads(main_categories)
-            main_categories_df = pd.DataFrame(self.main_categories_raw, dtype="int")[["CATEGORY_ID","TOPIC_TITLE_" + self.lang]]
-            # return main_categories_df[main_categories_df.CATEGORY_ID.isin(self.available_categories)] Fixed
-            return main_categories_df
+            main_categories_raw = json.loads(main_categories)
+            main_categories_df = pd.DataFrame(main_categories_raw, dtype="int")[["CATEGORY_ID","TOPIC_TITLE_" + self.lang]]
+            return main_categories_df[~main_categories_df.CATEGORY_ID.isin(self.not_available_categories)]
+            
         except:
-            return print("Main categories couldn't load. Please check your API Key.")
+            raise EVDSConnectionError(f"Main categories couldn't load. Please check your API Key.")
 
-    def get_sub_categories(self, main_category="", detail=False):
+    def get_sub_categories(self, main_category="", detail=False, raw=False):
         """
         The function returns sub-categories as dataframe object.
         If main_category,
@@ -57,47 +58,53 @@ class evdsAPI:
             params={ 'key' : self.key, 'mode' : 0, 'code' : '', 'type' : 'json'}
             
         elif isinstance(main_category, (int,float)):
-            params={ 'key' : self.key, 'mode' : 2, 'code' : main_category, 'type' : 'json'}
-
+            if main_category in self.main_categories["CATEGORY_ID"].to_list():
+                params={ 'key' : self.key, 'mode' : 2, 'code' : main_category, 'type' : 'json'}
+            else:
+                raise CategoryNotFoundError("Category not found.")
         else:
             try:
                 code = self.main_categories[self.main_categories["TOPIC_TITLE_"+self.lang].str.contains(main_category)]\
                         ["CATEGORY_ID"].values[0]
                 params={ 'key' : self.key, 'mode' : 2, 'code' : code , 'type' : 'json'}
             except:
-                print("Category not found.")
-                params={ 'key' : self.key, 'mode' : 0, 'code' : '', 'type' : 'json'}
+                raise CategoryNotFoundError("Category not found.")
 
         sub_categories = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/datagroups/',\
                             params=params)
-        self.sub_categories = pd.DataFrame(json.loads(sub_categories))
-
+        sub_categories = json.loads(sub_categories)
+        if raw:
+            return sub_categories
+        df = pd.DataFrame(sub_categories)
         if detail==False:
-            return self.sub_categories[["CATEGORY_ID",\
-                                        "DATAGROUP_CODE",\
-                                        "DATAGROUP_NAME" + ("_ENG" if self.lang=="ENG" else "")]]
+            return df[["CATEGORY_ID",\
+                       "DATAGROUP_CODE",\
+                       "DATAGROUP_NAME" + ("_ENG" if self.lang=="ENG" else "")]]
         else:
-            return self.sub_categories
+            return df
 
-    def get_series(self, datagroup_code, detail=False):
+    def get_series(self, datagroup_code, detail=False, raw=False):
         """
         The function returns dataframe of series which belongs to given data group.
         Because of default detail parameter is False, only return "SERIE_CODE", "SERIE_NAME" and "START_DATE" value.
         """
         series = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/serieList/',\
                                     params = {'key' : self.key, 'type' : 'json', 'code' : datagroup_code})
-        self.series_df = pd.DataFrame(json.loads(series))
+        series = json.loads(series)
+        if raw:
+            return series
+        df = pd.DataFrame(series)
         if detail == False:
-            return self.series_df[["SERIE_CODE",\
-                                "SERIE_NAME" + ("_ENG" if self.lang=="ENG" else ""),\
-                                "START_DATE"]]
+            return df[["SERIE_CODE",\
+                        "SERIE_NAME" + ("_ENG" if self.lang=="ENG" else ""),\
+                        "START_DATE"]]
         else:
-            return self.series_df
+            return df
         
-    def get_data(self, series, startdate, enddate="", aggregation_types="", formulas="", frequency=""):
+    def get_data(self, series, startdate, enddate="", aggregation_types="", formulas="", frequency="", raw=False):
         """
         The function returns data of the given series data. Series must be typed as list.
-        Also, set self.data variable which contains raw (JSON) value of series value.
+        Also, set parameter raw=False to return dictionary format.
         If end date not defined, end date set as equal to start date
         If aggregation_types and formulas,
             - not defined, API returns value aggregated and calculated default aggregations type and formula for the series.
@@ -138,10 +145,10 @@ class evdsAPI:
             aggregation_type_param = ''
         elif isinstance(aggregation_types, list):
             #User defined aggregation per series
-            aggregation_type_param = "-".join([i for i in aggregation_types])
+            aggregation_type_param = "-".join([str(i) for i in aggregation_types])
         else:
             #User defined aggregation same for all series
-            aggregation_type_param = "-".join([aggregation_types for i in range(series_count)])
+            aggregation_type_param = "-".join([str(aggregation_types) for i in range(series_count)])
 
         #Set formulas
         if formulas=="":
@@ -149,7 +156,7 @@ class evdsAPI:
             formula_param = ''
         elif isinstance(formulas, list):
             #User defined formula per series
-            formula_param = "-".join([i for i in formulas])
+            formula_param = "-".join([str(i) for i in formulas])
         else:
             #User defined formula same for all series
             formula_param = "-".join([str(formulas) for i in range(series_count)])
@@ -164,26 +171,26 @@ class evdsAPI:
                             'formulas' : formula_param,
                             'frequency' : str(frequency),
                             'aggregationTypes' : aggregation_type_param,
-
                             })
-        self.data = json.loads(data)["items"]
-        try:
-            #Numeric values in json data is defined as text. To fix this problem, set dtype="float"
-            return pd.DataFrame(self.data, dtype="float").drop(columns=["UNIXTIME"]) #.iloc[:,:-1]
-        except:
-            return pd.DataFrame(self.data, dtype="float")
-
+        data = json.loads(data)["items"]
+        #If raw is true return only json results.
+        if raw:
+            return data
+        #Numeric values in json data is defined as text. To fix this problem, set dtype="float"
+        df = pd.DataFrame(data, dtype="float")
+        if "UNIXTIME" in df.columns:
+            df.drop(columns=["UNIXTIME"], inplace=True)
+        return df
+       
     def __make_request(self,url,params={}):
         params = self.__param_generator(params)
         
         request = self.session.get(url + params)
         print(request.url) if self.DEBUG==True else None
         if request.status_code==200:
-
             return request.content
         else:
-            print("Connection error, Url:{}".format(request.url))
-            return None
+            raise EVDSConnectionError("Connection error, please check your API Key or request. Url:{}".format(request.url))
 
     def __param_generator(self,param):
         param_text = ''
@@ -191,3 +198,9 @@ class evdsAPI:
             param_text += str(key) + "=" + str(value)
             param_text += '&'
         return param_text[:-1]
+
+class CategoryNotFoundError(Exception):
+    pass
+
+class EVDSConnectionError(Exception):
+    pass

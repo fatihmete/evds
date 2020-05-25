@@ -10,6 +10,10 @@ evds paketini pip paket yöneticisi aracılığıyla kurabilirsiniz:
 pip install evds --upgrade
 ```
 ## Yenilikler
+0.2 sürümü ile birlikte aşağıdaki özellikler eklenmiştir:
+1. `get_data`, `get_sub_categories` ve `get_series` fonksiyonlarına, `raw` parametresi eklendi. Bu parametre `True` olarak tanımlandığında ilgili verilere dictionary formatında erişebilirsiniz.
+2. Çeşitli hatalar giderildi.
+
 0.1.1 sürümü ile birlikte aşağıdaki özellikler eklenmiştir:
 1. formulas parametresindeki hata giderildi.
 
@@ -25,7 +29,7 @@ from evds import evdsAPI
 evds = evdsAPI('EVDS_API_ANAHTARI')
 evds.get_data(['TP.DK.USD.A.YTL','TP.DK.EUR.A.YTL'], startdate="01-01-2019", enddate="01-01-2020")
 ```
-get_data fonksiyonu DataFrame return edecektir. İstenmesi halinde  `evds.data` komutu ile JSON formatında ham veriye ulaşılabilir.
+get_data fonksiyonu DataFrame return edecektir. İstenmesi halinde  `raw=True` parametresi ile dictionary formatında ham veriye ulaşılabilir.
 ### API Anahtarı Alma
 evds paketini kullanmak için öncelikle EVDS sistemi üzerinden API Anahtarı almanız gerekmektedir. API Anahtarı almak için aşağıdaki adımları izleyiniz:
 1. [EVDS](https://evds2.tcmb.gov.tr/) sayfasına giriş yaptıktan sonra Giriş Yap ve Kayıt Ol bağlantılarını izleyerek bir EVDS hesabı oluşturun.
@@ -45,6 +49,13 @@ Bu parametre liste olarak tanımlanmalıdır. Ayrıca birden fazla seri bu liste
 Seride yer alan verilerin hangi tarihten itibaren seçileceği bu parametre ile belirlenir. Tanımlanması zorunludur.
 #### enddate
 Eğer seri üzerinde bir aralık seçimi yapılmak isteniyorsa aralığın bitiş tarihi bu parametre ile belirtilir. Tanımlanması ihtiyaridir. Tanımlanmadığı durumda `startdate` değerine eşit olarak tanımlanır.
+#### raw
+`True` olması halinde fonksiyon talep edilen veriyi DataFrame yerine dictionary return eder. 
+Örnek kullanım:
+```python
+...
+evds.get_data(['TP.DK.USD.A.YTL','TP.DK.EUR.A.YTL'], startdate="01-01-2019", enddate="01-01-2020", raw=True)
+```
 #### aggregation_types
 Seri içindeki verilerin getirilmesi esnasında kullanılacak olan toplululaştırma yöntemini ifade eder. Tanımlanması ihtiyaridir. Eğer tanımlanmamışsa seri için tanımlanan öntanımlı yöntem kullanılır. Ayrıca değer olarak string veya liste alabilir. String alması durumunda tüm seriler için aynı yöntem uygulanır. Liste olarak tanımlanırsa `series` parametresinde tanımlanan serilere sırasıyla belirtilen yöntemler uygulanır.
 Kullanılabilecek yöntemler aşağıdaki gibidir:
@@ -74,6 +85,16 @@ Kullanılabilecek yöntemler aşağıdaki gibidir:
 |Hareketli Ortalama| 7|
 |Hareketli Toplam| 8|
 
+API formula parametresi uygulandığında orijinal değerleri `None` olarak yanıtladığı için, formula parametresi tanımladığınız serinin orijinal değerlere ulaşmak için aynı seriyi tekrar ekleyiniz ve formula parametresini 0 olarak tanımlayınız. Örneğin
+```python
+evds.get_data(['TP.DK.USD.A.YTL','TP.DK.USD.A.YTL'], 
+              startdate="01-01-2019", 
+              enddate="01-01-2020",
+              formulas=[1,0],
+                )
+```
+USD için yüzde değişim ve orijinal değerlere aynı anda yukarıdaki gibi ulaşabilirsiniz.
+
 #### frequency
 Seri içerisinde yer alan verilerin hangi sıklıkla getireceğini ifade eder. Tanımlanması ihtiyaridir. Eğer tanımlanmamışsa seri için tanımlanan öntanımlı yayımlanma sıklığı kullanılır.Aşağıdaki değerleri alabilir.
 
@@ -93,7 +114,7 @@ EVDS üzerinde veri serileri sırasıyla Ana Kategori, Alt Kategori ve Seri hiye
 > `get_data` fonksiyonun kullanılması için aşağıda yer alan işlemlerin gerçekleştirilmesine gerek yoktur. Veri serisine ait kodun bilinmesi durumunda doğrudan `get_data` fonksiyonu kullanılabilir.
 
 ### Ana kategorileri listeleme
-Paket çağırıldığında otomatik olarak API aracılığıyla ana veri kategorileri listelenmektedir.
+`main_categories` değişkeni ile ana kategorileri listeleyebilirsiniz.
 
 ```python
 ...
@@ -110,7 +131,7 @@ komut ile ana kategorileri listeleyebilirsiniz.
 |	...	|...|
 
 ### Alt kategorileri listeleme
-Ana kategori altında yer alan alt kategorilere aşağıdaki şekilde ulaşabilirsiniz:
+Ana kategori altında yer alan alt kategorilere aşağıdaki şekilde ulaşabilirsiniz. Ayrıca `raw=True` parametresi ile DataFrame yerine dictionary formatında alt kategorileri ulaşılabilir.
 ```python
 evds.get_sub_categories('Ana kategori ID'si veya Adı')
 ```
@@ -132,7 +153,7 @@ Yukarıda yer alan örnekte 6'nolu kategori altında yer alan alt kategoriler li
 evds.get_sub_categories("KURLAR")
 ```
 ### Serileri listeleme
-Alt kategori altında yer alan veri serilerine aşağıdaki şekilde ulaşabilirsiniz:
+Alt kategori altında yer alan veri serilerine aşağıdaki şekilde ulaşabilirsiniz. Ayrıca `raw=True` parametresi ile DataFrame yerine dictionary formatında serilere ulaşılabilir.
 ```python
 evds.get_series('Alt kategori adı')
 ```

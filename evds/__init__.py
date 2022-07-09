@@ -1,7 +1,10 @@
+import warnings
 import pandas as pd
 import requests
 import json
-import warnings
+
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 
 class evdsAPI:
     """
@@ -80,8 +83,8 @@ class evdsAPI:
             return df[["CATEGORY_ID",\
                        "DATAGROUP_CODE",\
                        "DATAGROUP_NAME" + ("_ENG" if self.lang=="ENG" else "")]]
-        else:
-            return df
+
+        return df
 
     def get_series(self, datagroup_code, detail=False, raw=False):
         """
@@ -98,8 +101,8 @@ class evdsAPI:
             return df[["SERIE_CODE",\
                         "SERIE_NAME" + ("_ENG" if self.lang=="ENG" else ""),\
                         "START_DATE"]]
-        else:
-            return df
+
+        return df
         
     def get_data(self, series, startdate, enddate="", aggregation_types="", formulas="", frequency="", raw=False):
         """
@@ -184,8 +187,8 @@ class evdsAPI:
        
     def __make_request(self,url,params={}):
         params = self.__param_generator(params)
-        
-        request = self.session.get(url + params)
+        with self.session as session:
+            request = session.get(url + params)
         print(request.url) if self.DEBUG==True else None
         if request.status_code==200:
             return request.content
@@ -199,8 +202,10 @@ class evdsAPI:
             param_text += '&'
         return param_text[:-1]
 
+
 class CategoryNotFoundError(Exception):
     pass
+
 
 class EVDSConnectionError(Exception):
     pass

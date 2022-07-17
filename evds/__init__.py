@@ -80,8 +80,8 @@ class evdsAPI:
             return df[["CATEGORY_ID",\
                        "DATAGROUP_CODE",\
                        "DATAGROUP_NAME" + ("_ENG" if self.lang=="ENG" else "")]]
-        else:
-            return df
+
+        return df
 
     def get_series(self, datagroup_code, detail=False, raw=False):
         """
@@ -98,8 +98,8 @@ class evdsAPI:
             return df[["SERIE_CODE",\
                         "SERIE_NAME" + ("_ENG" if self.lang=="ENG" else ""),\
                         "START_DATE"]]
-        else:
-            return df
+
+        return df
         
     def get_data(self, series, startdate, enddate="", aggregation_types="", formulas="", frequency="", raw=False):
         """

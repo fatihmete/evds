@@ -184,8 +184,9 @@ class evdsAPI:
        
     def __make_request(self,url,params={}):
         params = self.__param_generator(params)
-        
-        request = self.session.get(url + params)
+        with self.session as session:
+            request = session.get(url + params)
+
         print(request.url) if self.DEBUG==True else None
         if request.status_code==200:
             return request.content

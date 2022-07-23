@@ -15,12 +15,9 @@ class evdsAPI:
         self.key = key
         self.DEBUG = DEBUG
         self.proxies = proxies
-        self.httspVerify = httpsVerify
+        self.httpsVerify = httpsVerify
         self.session = requests.Session()
         self.data = ""
-        if self.proxies != "":
-            self.session.proxies = self.proxies
-            self.session.verify = self.httspVerify
         
         if lang in ["TR","ENG"]:
             self.lang = lang
@@ -185,6 +182,9 @@ class evdsAPI:
     def __make_request(self,url,params={}):
         params = self.__param_generator(params)
         with self.session as session:
+            if self.proxies != "":
+                session.proxies = self.proxies
+                session.verify = self.httpsVerify
             request = session.get(url + params)
 
         print(request.url) if self.DEBUG==True else None

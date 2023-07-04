@@ -4,6 +4,7 @@ import json
 import ssl
 import urllib3
 import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 class CustomHttpAdapter (requests.adapters.HTTPAdapter):

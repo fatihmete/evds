@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf8") as fh:
 
 setuptools.setup(
     name="evds",
-    version="0.2.0",
+    version="0.3.0",
     author="Fatih Mete",
     author_email="fatihmete@live.com",
     description="EVDS python wrapper",
@@ -18,8 +18,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-   install_requires=[
-          'pandas', 'requests',
-   ],
-   python_requires='>=3.6',
+    install_requires=[
+        'pandas', 'requests', 'urllib3'
+    ],
+    python_requires='>=3.6',
 )

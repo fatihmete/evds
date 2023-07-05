@@ -32,18 +32,10 @@ class evdsAPI:
         self.key = key
         self.DEBUG = DEBUG
         self.proxies = proxies
-        self.httspVerify = httpsVerify
+        self.httpsVerify = httpsVerify
         self.legacySSL = legacySSL
-        self.session = requests.Session()
-        if self.legacySSL:
-            ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-            ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT
-            self.session.mount('https://', CustomHttpAdapter(ctx))
 
-        self.data = ""
-        if self.proxies != "":
-            self.session.proxies = self.proxies
-            self.session.verify = self.httspVerify
+        self.__create_session()
 
         if lang in ["TR", "ENG"]:
             self.lang = lang
@@ -53,6 +45,17 @@ class evdsAPI:
         self.not_available_categories = [17]
 
         self.main_categories = self.__get_main_categories()
+
+    def __create_session(self):
+        self.session = requests.Session()
+        if self.legacySSL:
+            ctx = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+            ctx.options |= 0x4  # OP_LEGACY_SERVER_CONNECT
+            self.session.mount('https://', CustomHttpAdapter(ctx))
+
+        if self.proxies != "":
+            self.session.proxies = self.proxies
+            self.session.verify = self.httpsVerify
 
     def __get_main_categories(self):
         """
@@ -214,8 +217,8 @@ class evdsAPI:
 
     def __make_request(self, url, params={}):
         params = self.__param_generator(params)
-
         request = self.session.get(url + params)
+        self.session.close()
         print(request.url) if self.DEBUG == True else None
         if request.status_code == 200:
             return request.content

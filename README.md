@@ -16,11 +16,11 @@ pip install evds --upgrade
 
 ## Yenilikler
 
-0.3 sürümü ile aşağıdaki değişiklikler yapılmıştır:
+0.3 sürümü ile aşağıdaki değişiklikler yapıldı:
 
-1. SSL hatalarının giderilmesi için legacySSL parametresi eklenmiştir. [PR #8](https://github.com/fatihmete/evds/pull/8)
-2. Kod içerisnde düzeltmeler yapılmıştır. [PR #6](https://github.com/fatihmete/evds/pull/6)
-3. Pandas DataFrame numeric tiplere cast ederken ortaya çıkan FutureWarning uyarıları kapatılmıştır. Bu hata sonraki sürümlerde giderilecektir.
+1. SSL hatalarının giderilmesi için legacySSL parametresi eklendi. [PR #8](https://github.com/fatihmete/evds/pull/8)
+2. Kod içerisinde düzeltmeler yapıldı. [PR #6](https://github.com/fatihmete/evds/pull/6)
+3. Pandas DataFrame numeric tiplere cast ederken ortaya çıkan FutureWarning uyarıları kapatıldı. Bu hata sonraki sürümlerde giderilecektir.
 
 0.2 sürümü ile birlikte aşağıdaki özellikler eklenmiştir:
 

@@ -65,8 +65,10 @@ class evdsAPI:
                                               params={'key': self.key, 'type': 'json'})
         try:
             main_categories_raw = json.loads(main_categories)
-            main_categories_df = pd.DataFrame(main_categories_raw, dtype="int")[
+            main_categories_df = pd.DataFrame(main_categories_raw)[
                 ["CATEGORY_ID", "TOPIC_TITLE_" + self.lang]]
+            main_categories_df["CATEGORY_ID"] = main_categories_df["CATEGORY_ID"].astype(
+                "int")
             return main_categories_df[~main_categories_df.CATEGORY_ID.isin(self.not_available_categories)]
 
         except:
@@ -209,8 +211,14 @@ class evdsAPI:
         # If raw is true return only json results.
         if raw:
             return data
-        # Numeric values in json data is defined as text. To fix this problem, set dtype="float"
-        df = pd.DataFrame(data, dtype="float")
+
+        df = pd.DataFrame(data)
+
+        # Numeric values in json data is defined as text. To fix this problem, we cast to float serie values.
+        for serie_col in [s.replace(".", "_") for s in series]:
+            if serie_col in df.columns:
+                df[serie_col] = df[serie_col].astype("float")
+
         if "UNIXTIME" in df.columns:
             df.drop(columns=["UNIXTIME"], inplace=True)
         return df

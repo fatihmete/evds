@@ -4,7 +4,7 @@
 
 EVDS paketi EVDS-API üzerinden Türkiye Cumhuriyet Merkez Bankası (TCMB) tarafından Elektronik Veri Dağıtım Sistemi (EVDS) aracılığıyla yayımlanan tüm istatistiki verilere python aracılığıyla erişmenize imkan sağlar.
 
-EVDS paketi resmi bir paket olmayıp açık kaynak kodlu (MIT lisansıyla) olarak geliştirilmektedir.
+EVDS paketi resmi bir paket olmayıp açık kaynak kodlu olarak geliştirilmektedir.
 
 ## Kurulum
 
@@ -21,7 +21,7 @@ pip install evds --upgrade
 1. SSL hatalarının giderilmesi için legacySSL parametresi eklendi. [PR #8](https://github.com/fatihmete/evds/pull/8)
 2. Kod içerisinde düzeltmeler yapıldı. [PR #6](https://github.com/fatihmete/evds/pull/6) [PR #4](https://github.com/fatihmete/evds/pull/4)
 3. request session'un açık kalması nedeniyle ortaya çıkan ResourceWarning uyarısı giderildi. [PR #4](https://github.com/fatihmete/evds/pull/4)
-4. Pandas DataFrame numeric tiplere cast ederken ortaya çıkan FutureWarning uyarıları kapatıldı. Bu hata sonraki sürümlerde giderilecektir.
+4. Pandas DataFrame numeric tiplere cast ederken ortaya çıkan FutureWarning uyarıları çıkıyordu. Bu sorun giderildi. [PR #9](https://github.com/fatihmete/evds/pull/9)
 
 0.2 sürümü ile birlikte aşağıdaki özellikler eklenmiştir:
 

@@ -3,9 +3,6 @@ import requests
 import json
 import ssl
 import urllib3
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
 
 class CustomHttpAdapter (requests.adapters.HTTPAdapter):
     # "Transport adapter" that allows us to use custom ssl_context.
@@ -214,7 +211,7 @@ class evdsAPI:
 
         df = pd.DataFrame(data)
 
-        # Numeric values in json data is defined as text. To fix this problem, we cast to float serie values.
+        # Numeric values in json data is defined as string. To fix this problem, we cast values to float.
         for serie_col in [s.replace(".", "_") for s in series]:
             if serie_col in df.columns:
                 df[serie_col] = df[serie_col].astype("float")

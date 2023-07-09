@@ -25,7 +25,7 @@ class evdsAPI:
     evds.get_data(['TP.DK.USD.A.YTL','TP.DK.EUR.A.YTL'], startdate="01-01-2019", enddate="01-01-2020")
     """
 
-    def __init__(self, key, lang="TR", DEBUG=False, proxies="", httpsVerify=True, legacySSL=False):
+    def __init__(self, key, lang="TR", DEBUG=False, proxies="", httpsVerify=True, legacySSL=True):
         self.key = key
         self.DEBUG = DEBUG
         self.proxies = proxies

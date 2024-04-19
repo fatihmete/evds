@@ -59,7 +59,7 @@ class evdsAPI:
         Function returns main categories dataframe.
         """
         main_categories = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/categories/',
-                                              params={'key': self.key, 'type': 'json'})
+                                              params={'type': 'json'})
         try:
             main_categories_raw = json.loads(main_categories)
             main_categories_df = pd.DataFrame(main_categories_raw)[
@@ -82,20 +82,18 @@ class evdsAPI:
               returns matched the main category' subcategories
         """
         if main_category == "":
-            params = {'key': self.key, 'mode': 0, 'code': '', 'type': 'json'}
+            params = {'mode': 0, 'code': '', 'type': 'json'}
 
         elif isinstance(main_category, (int, float)):
             if main_category in self.main_categories["CATEGORY_ID"].to_list():
-                params = {'key': self.key, 'mode': 2,
-                          'code': main_category, 'type': 'json'}
+                params = {'mode': 2, 'code': main_category, 'type': 'json'}
             else:
                 raise CategoryNotFoundError("Category not found.")
         else:
             try:
                 code = self.main_categories[self.main_categories["TOPIC_TITLE_" +
                                                                  self.lang].str.contains(main_category)]["CATEGORY_ID"].values[0]
-                params = {'key': self.key, 'mode': 2,
-                          'code': code, 'type': 'json'}
+                params = {'mode': 2, 'code': code, 'type': 'json'}
             except:
                 raise CategoryNotFoundError("Category not found.")
 
@@ -118,7 +116,7 @@ class evdsAPI:
         Because of default detail parameter is False, only return "SERIE_CODE", "SERIE_NAME" and "START_DATE" value.
         """
         series = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/serieList/',
-                                     params={'key': self.key, 'type': 'json', 'code': datagroup_code})
+                                     params={'type': 'json', 'code': datagroup_code})
         series = json.loads(series)
         if raw:
             return series
@@ -199,7 +197,6 @@ class evdsAPI:
                                        'startDate': startdate,
                                        'endDate': enddate,
                                        'type': 'json',
-                                       'key': self.key,
                                        'formulas': formula_param,
                                        'frequency': str(frequency),
                                        'aggregationTypes': aggregation_type_param,
@@ -222,7 +219,7 @@ class evdsAPI:
 
     def __make_request(self, url, params={}):
         params = self.__param_generator(params)
-        request = self.session.get(url + params)
+        request = self.session.get(url + params, headers={'key': self.key})
         self.session.close()
         print(request.url) if self.DEBUG == True else None
         if request.status_code == 200:

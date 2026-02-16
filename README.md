@@ -16,6 +16,10 @@ pip install evds --upgrade
 
 ## Yenilikler
 
+0.4 sürümü ile aşağıdaki değişiklikler yapıldı:
+
+1. EVDS3 sürümü ile uyum sağlandı.
+
 0.3 sürümü ile aşağıdaki değişiklikler yapıldı:
 
 1. SSL hatalarının giderilmesi için legacySSL parametresi eklendi. [PR #8](https://github.com/fatihmete/evds/pull/8)
@@ -54,13 +58,12 @@ get_data fonksiyonu DataFrame return edecektir. İstenmesi halinde `raw=True` pa
 
 evds paketini kullanmak için öncelikle EVDS sistemi üzerinden API Anahtarı almanız gerekmektedir. API Anahtarı almak için aşağıdaki adımları izleyiniz:
 
-1. [EVDS](https://evds2.tcmb.gov.tr/) sayfasına giriş yaptıktan sonra Giriş Yap ve Kayıt Ol bağlantılarını izleyerek bir EVDS hesabı oluşturun.
-2. Ardından kullanıcı adınızın altında yer alan profil bağlantısına tıklayınız.
+1. [EVDS](https://evds3.tcmb.gov.tr/) sayfasına giriş yaptıktan sonra "BENİM SAYFAM" ve Kayıt yolunu izleyerek bir EVDS hesabı oluşturun.
+2. Ardından kullanıcı adınızın altında yer alan "Profilim" bağlantısına tıklayınız.
 
 ![01](01.png)
 
-3. Profil sayfanızın alt kısmında yer alan "API Anahtarı" butonuna tıklayınız ve açılan kutucukta yer alan değeri kopyalayınız.
-
+3. Profil sayfanızın alt kısmında yer alan "API Key Kopyala" butonuna basınız.
 ![02](02.png)
 
 ### Detaylı Sorgulama

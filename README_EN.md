@@ -34,12 +34,12 @@ evds.get_data(['TP.DK.USD.A.YTL','TP.DK.EUR.A.YTL'], startdate="01-01-2019", end
 ```
 ### Get API Key
 To use the evds package, you must first get the API Key on the EVDS system. To get the API Key, follow the steps below:
-1. Open [EVDS](https://evds2.tcmb.gov.tr/) page and create an EVDS Account.
-2. Then click on the profile link under your username.
+1. Open [EVDS](https://evds3.tcmb.gov.tr/) page and create an EVDS Account.
+2. Then click on the "My Profile" link under your username.
 
 ![01](01.png)
 
-3. Click the "API Key" button at the bottom of your profile page and copy the value in the box that opens.
+3. Click the "Copy API Key" button.
 
 ![02](02.png)
 

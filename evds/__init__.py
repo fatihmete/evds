@@ -4,6 +4,8 @@ import json
 import ssl
 import urllib3
 
+BASE_URL = "https://evds3.tcmb.gov.tr/igmevdsms-dis/"
+
 class CustomHttpAdapter (requests.adapters.HTTPAdapter):
     # "Transport adapter" that allows us to use custom ssl_context.
     def __init__(self, ssl_context=None, **kwargs):
@@ -31,6 +33,7 @@ class evdsAPI:
         self.proxies = proxies
         self.httpsVerify = httpsVerify
         self.legacySSL = legacySSL
+        self.base_url = BASE_URL
 
         self.__create_session()
 
@@ -39,7 +42,7 @@ class evdsAPI:
         else:
             self.lang = "TR"
         # API returns this main categories but they are not available
-        self.not_available_categories = [17]
+        self.not_available_categories = []
 
         self.main_categories = self.__get_main_categories()
 
@@ -58,7 +61,7 @@ class evdsAPI:
         """
         Function returns main categories dataframe.
         """
-        main_categories = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/categories/',
+        main_categories = self.__make_request(self.base_url + 'categories/',
                                               params={'type': 'json'})
         try:
             main_categories_raw = json.loads(main_categories)
@@ -97,12 +100,18 @@ class evdsAPI:
             except:
                 raise CategoryNotFoundError("Category not found.")
 
-        sub_categories = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/datagroups/',
+        sub_categories = self.__make_request(self.base_url + 'datagroups/',
                                              params=params)
         sub_categories = json.loads(sub_categories)
+
         if raw:
             return sub_categories
         df = pd.DataFrame(sub_categories)
+        
+        # V3 API returns empty json for parent categories
+        if df.empty:
+            return df
+        
         if detail == False:
             return df[["CATEGORY_ID",
                        "DATAGROUP_CODE",
@@ -115,7 +124,7 @@ class evdsAPI:
         The function returns dataframe of series which belongs to given data group.
         Because of default detail parameter is False, only return "SERIE_CODE", "SERIE_NAME" and "START_DATE" value.
         """
-        series = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/serieList/',
+        series = self.__make_request(self.base_url + 'serieList/',
                                      params={'type': 'json', 'code': datagroup_code})
         series = json.loads(series)
         if raw:
@@ -191,7 +200,7 @@ class evdsAPI:
             formula_param = "-".join([str(formulas)
                                      for i in range(series_count)])
 
-        data = self.__make_request('https://evds2.tcmb.gov.tr/service/evds/',
+        data = self.__make_request(self.base_url,
                                    params={
                                        'series': "-".join(series),
                                        'startDate': startdate,

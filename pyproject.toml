@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evds"
+version = "0.4.0"
+description = "EVDS python wrapper"
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.6"
+license = { file = "LICENCE" }
+authors = [ { name = "Fatih Mete", email = "fatihmete@live.com" } ]
+dependencies = [
+  "pandas",
+  "requests",
+  "urllib3",
+]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+urls = { "Homepage" = "https://github.com/fatihmete/evds" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["evds*"]

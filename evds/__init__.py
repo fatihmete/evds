@@ -194,10 +194,10 @@ class evdsAPI:
             formula_param = ''
         elif isinstance(formulas, list):
             # User defined formula per series
-            formula_param = "-".join([str(i) for i in formulas])
+            formula_param = "#".join([str(i) for i in formulas])
         else:
             # User defined formula same for all series
-            formula_param = "-".join([str(formulas)
+            formula_param = "#".join([str(formulas)
                                      for i in range(series_count)])
 
         data = self.__make_request(self.base_url,

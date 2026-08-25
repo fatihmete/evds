@@ -234,8 +234,13 @@ class evdsAPI:
         if request.status_code == 200:
             return request.content
         else:
+            try:
+                error_details = json.loads(request.text).get("message", request.text)
+            except (ValueError, AttributeError, TypeError):
+                error_details = request.text
             raise EVDSConnectionError(
-                "Connection error, please check your API Key or request. Url:{}".format(request.url))
+                "Request failed (status code: {}), please check your API Key or request. Url:{}, Message:{}".format(
+                    request.status_code, request.url, error_details))
 
     def __param_generator(self, param):
         param_text = ''
